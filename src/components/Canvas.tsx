@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Game } from '../models/Game';
+import { Spell } from '../models/Spell';
 
 interface IProps {
     width: number;
@@ -18,23 +19,57 @@ const CanvasComponent: FC<IProps> = ({ width, height }) => {
     }, [canvasRef, width, height]);
 
     // animating
-
+    const isFirstTimeRef = useRef<boolean>(true);
     useEffect(() => {
-        const animate = () => {
-            if (gameRef.current && contextRef.current && canvasRef.current) {
-                contextRef.current.closePath();
-                contextRef.current.beginPath();
-                gameRef.current.update();
-                gameRef.current.draw();
-                requestAnimationFrame(animate);
-            }
-        };
-        animate();
+        if (isFirstTimeRef.current) {
+            isFirstTimeRef.current = false;
+            const animate = () => {
+                if (gameRef.current && contextRef.current && canvasRef.current) {
+                    gameRef.current.update();
+                    gameRef.current.draw();
+                    requestAnimationFrame(animate);
+                }
+            };
+            animate();
+            setInterval(() => {
+                gameRef.current?.wizards.forEach((wizard) => {
+                    if (gameRef.current) {
+                        const spell = new Spell(
+                            wizard.position === 'left'
+                                ? { x: wizard.location.x + 30, y: wizard.location.y }
+                                : { x: wizard.location.x - 30, y: wizard.location.y },
+                            wizard.position === 'left' ? 'right' : 'left',
+                            wizard,
+                        );
+                        wizard.spells.push(spell);
+                        gameRef.current.spells.push(spell);
+                    }
+                });
+            }, 500);
+        }
     }, []);
 
-    return <Canvas ref={canvasRef} width={width} height={height}></Canvas>;
+    return (
+        <Wrapper>
+            <Canvas ref={canvasRef} width={width} height={height} />
+        </Wrapper>
+    );
 };
-
+const ScoreText = styled.p`
+    font-family: 'Montserrat', sans-serif;
+`;
+const ScoreBlock = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`;
+const Wrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    row-gap: 30px;
+    justify-content: center;
+    align-items: center;
+`;
 const Canvas = styled.canvas`
     border: 1px black solid;
     background-color: #ffffff;

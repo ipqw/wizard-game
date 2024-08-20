@@ -1,23 +1,28 @@
 import { Game } from './Game';
+import { Spell } from './Spell';
 
-interface IPosition {
+export interface IPosition {
     x: number;
     y: number;
 }
 
 export class Wizard {
-    public speed: number = 1;
-    public location: IPosition = { x: 0, y: 0 };
-    public position: 'left' | 'right';
-    public direction: 'up' | 'down';
-    public game: Game;
+    speed: number = 1;
+    location: IPosition;
+    position: 'left' | 'right';
+    direction: 'up' | 'down';
+    game: Game;
+    spells: Spell[] = [];
+    context: CanvasRenderingContext2D | null;
+    hits: number = 0;
 
-    constructor(position: 'left' | 'right', game: Game) {
+    constructor(position: 'left' | 'right', game: Game, context: CanvasRenderingContext2D | null) {
         this.location =
             position === 'left' ? { x: 50, y: 50 } : { x: game.width - 80, y: game.height - 80 };
         this.position = position;
         this.direction = position === 'left' ? 'down' : 'up';
         this.game = game;
+        this.context = context;
     }
 
     update = () => {
@@ -32,11 +37,23 @@ export class Wizard {
             }
             this.location.y += this.speed;
         }
+        this.spells.forEach((spell) => {
+            if (this.context) {
+                spell.update();
+            }
+        });
     };
 
     draw = (context: CanvasRenderingContext2D) => {
+        context.beginPath();
         context.roundRect(this.location.x, this.location.y, 30, 30, 100);
         context.fillStyle = 'red';
         context.fill();
+        context.closePath();
+        this.spells.forEach((spell) => {
+            if (this.context) {
+                spell.draw(this.context);
+            }
+        });
     };
 }
