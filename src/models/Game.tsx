@@ -1,3 +1,4 @@
+import { store } from '../store';
 import { Spell } from './Spell';
 import { Wizard } from './Wizard';
 
@@ -29,6 +30,7 @@ export class Game {
                         spell.location.y <= wizard.location.y + 30 &&
                         wizard.position === 'right'
                     ) {
+                        store.increaseLeftWizardHits();
                         spell.hitWizard();
                     }
                 } else if (spell.direction === 'left' && spell.isVisible) {
@@ -39,6 +41,7 @@ export class Game {
                         spell.location.y <= wizard.location.y + 30 &&
                         wizard.position === 'left'
                     ) {
+                        store.increaseRightWizardHits();
                         spell.hitWizard();
                     }
                 }

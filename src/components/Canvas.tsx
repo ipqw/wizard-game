@@ -55,14 +55,6 @@ const CanvasComponent: FC<IProps> = ({ width, height }) => {
         </Wrapper>
     );
 };
-const ScoreText = styled.p`
-    font-family: 'Montserrat', sans-serif;
-`;
-const ScoreBlock = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-`;
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
