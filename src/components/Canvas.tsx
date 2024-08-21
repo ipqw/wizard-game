@@ -37,8 +37,8 @@ const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
         }
     };
 
-    const leftWizardCast = () => {
-        const wizard = store.leftWizard;
+    const wizardCast = (wizardPosition: 'left' | 'right') => {
+        const wizard = wizardPosition === 'left' ? store.leftWizard : store.rightWizard;
         if (gameRef.current && wizard) {
             setTimeout(() => {
                 const spell = new Spell(
@@ -50,25 +50,7 @@ const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
                 );
                 wizard.spells.push(spell);
                 gameRef.current?.spells.push(spell);
-                leftWizardCast();
-            }, castFrequencyToTime(wizard.castFrequency));
-        }
-    };
-
-    const rightWizardCast = () => {
-        const wizard = store.rightWizard;
-        if (gameRef.current && wizard) {
-            setTimeout(() => {
-                const spell = new Spell(
-                    wizard.position === 'left'
-                        ? { x: wizard.location.x + 30, y: wizard.location.y }
-                        : { x: wizard.location.x - 30, y: wizard.location.y },
-                    wizard.position === 'left' ? 'right' : 'left',
-                    wizard,
-                );
-                wizard.spells.push(spell);
-                gameRef.current?.spells.push(spell);
-                rightWizardCast();
+                wizardCast(wizardPosition);
             }, castFrequencyToTime(wizard.castFrequency));
         }
     };
@@ -84,10 +66,10 @@ const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
                 }
             };
             animate();
-            leftWizardCast();
-            rightWizardCast();
+            wizardCast('left');
+            wizardCast('right');
         }
-    }, []);
+    });
 
     return (
         <Wrapper>

@@ -99,6 +99,7 @@ const ScoreBlock = styled.div`
     column-gap: 40px;
     display: flex;
     align-items: center;
+    margin-top: 30px;
 `;
 const Wrapper = styled.div`
     display: flex;
