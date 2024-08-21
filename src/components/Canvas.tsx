@@ -2,13 +2,15 @@ import { FC, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Game } from '../models/Game';
 import { Spell } from '../models/Spell';
+import { store } from '../store';
+import { observer } from 'mobx-react';
 
 interface IProps {
     width: number;
     height: number;
 }
-
-const CanvasComponent: FC<IProps> = ({ width, height }) => {
+// ПРОДУМАТЬ ЛОГИКУ ЧАСТОТы КАСТОВ
+const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const gameRef = useRef<Game | null>(null);
@@ -20,6 +22,57 @@ const CanvasComponent: FC<IProps> = ({ width, height }) => {
 
     // animating
     const isFirstTimeRef = useRef<boolean>(true);
+
+    const castFrequencyToTime = (castFrequency: number): number => {
+        if (castFrequency > 1.6) {
+            return 200;
+        } else if (castFrequency > 1.2) {
+            return 400;
+        } else if (castFrequency > 0.8) {
+            return 600;
+        } else if (castFrequency > 0.4) {
+            return 800;
+        } else {
+            return 1000;
+        }
+    };
+
+    const leftWizardCast = () => {
+        const wizard = store.leftWizard;
+        if (gameRef.current && wizard) {
+            setTimeout(() => {
+                const spell = new Spell(
+                    wizard.position === 'left'
+                        ? { x: wizard.location.x + 30, y: wizard.location.y }
+                        : { x: wizard.location.x - 30, y: wizard.location.y },
+                    wizard.position === 'left' ? 'right' : 'left',
+                    wizard,
+                );
+                wizard.spells.push(spell);
+                gameRef.current?.spells.push(spell);
+                leftWizardCast();
+            }, castFrequencyToTime(wizard.castFrequency));
+        }
+    };
+
+    const rightWizardCast = () => {
+        const wizard = store.rightWizard;
+        if (gameRef.current && wizard) {
+            setTimeout(() => {
+                const spell = new Spell(
+                    wizard.position === 'left'
+                        ? { x: wizard.location.x + 30, y: wizard.location.y }
+                        : { x: wizard.location.x - 30, y: wizard.location.y },
+                    wizard.position === 'left' ? 'right' : 'left',
+                    wizard,
+                );
+                wizard.spells.push(spell);
+                gameRef.current?.spells.push(spell);
+                rightWizardCast();
+            }, castFrequencyToTime(wizard.castFrequency));
+        }
+    };
+
     useEffect(() => {
         if (isFirstTimeRef.current) {
             isFirstTimeRef.current = false;
@@ -31,21 +84,8 @@ const CanvasComponent: FC<IProps> = ({ width, height }) => {
                 }
             };
             animate();
-            setInterval(() => {
-                gameRef.current?.wizards.forEach((wizard) => {
-                    if (gameRef.current) {
-                        const spell = new Spell(
-                            wizard.position === 'left'
-                                ? { x: wizard.location.x + 30, y: wizard.location.y }
-                                : { x: wizard.location.x - 30, y: wizard.location.y },
-                            wizard.position === 'left' ? 'right' : 'left',
-                            wizard,
-                        );
-                        wizard.spells.push(spell);
-                        gameRef.current.spells.push(spell);
-                    }
-                });
-            }, 500);
+            leftWizardCast();
+            rightWizardCast();
         }
     }, []);
 
@@ -54,7 +94,7 @@ const CanvasComponent: FC<IProps> = ({ width, height }) => {
             <Canvas ref={canvasRef} width={width} height={height} />
         </Wrapper>
     );
-};
+});
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -65,7 +105,6 @@ const Wrapper = styled.div`
 const Canvas = styled.canvas`
     border: 1px black solid;
     background-color: #ffffff;
-    margin-top: 100px;
 `;
 
 export default CanvasComponent;

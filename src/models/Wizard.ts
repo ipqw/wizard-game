@@ -15,6 +15,7 @@ export class Wizard {
     spells: Spell[] = [];
     context: CanvasRenderingContext2D | null;
     hits: number = 0;
+    castFrequency: number = 0.5;
 
     constructor(position: 'left' | 'right', game: Game, context: CanvasRenderingContext2D | null) {
         this.location =
@@ -55,5 +56,11 @@ export class Wizard {
                 spell.draw(this.context);
             }
         });
+    };
+    setSpeed = (value: number) => {
+        this.speed = value;
+    };
+    setCastFrequency = (value: number) => {
+        this.castFrequency = value;
     };
 }

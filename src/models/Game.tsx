@@ -14,6 +14,8 @@ export class Game {
         this.context = context;
         this.wizards.push(new Wizard('left', this, context));
         this.wizards.push(new Wizard('right', this, context));
+        store.setLeftWizard(this.wizards[0]);
+        store.setRightWizard(this.wizards[1]);
     }
 
     update = () => {
