@@ -33,7 +33,8 @@ export class Wizard {
                 this.direction = 'down';
             }
             if (
-                store.cursorLocation.y === this.location.y &&
+                store.cursorLocation.y >= this.location.y - 1 &&
+                store.cursorLocation.y <= this.location.y + 1 &&
                 store.cursorLocation.x >= this.location.x &&
                 store.cursorLocation.x <= this.location.x + 30
             ) {
@@ -45,7 +46,8 @@ export class Wizard {
                 this.direction = 'up';
             }
             if (
-                store.cursorLocation.y === this.location.y + 30 &&
+                store.cursorLocation.y >= this.location.y + 29 &&
+                store.cursorLocation.y <= this.location.y + 31 &&
                 store.cursorLocation.x >= this.location.x &&
                 store.cursorLocation.x <= this.location.x + 30
             ) {
