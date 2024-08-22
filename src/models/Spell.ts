@@ -12,10 +12,10 @@ export class Spell {
         this.direction = direction;
         this.wizard = wizard;
     }
-    draw = (context: CanvasRenderingContext2D) => {
+    draw = (context: CanvasRenderingContext2D, color: string) => {
         context.beginPath();
         context.roundRect(this.location.x, this.location.y, 10, 10, 100);
-        context.fillStyle = this.isVisible ? 'blue' : '#ffffff';
+        context.fillStyle = this.isVisible ? color : '#ffffff';
         context.fill();
         context.closePath();
     };

@@ -18,9 +18,9 @@ const PopupMenu: FC<IProps> = ({ isVisible, location, wizard, setIsPopupVisible 
         <Wrapper $location={location} $isVisible={isVisible}>
             <Color
                 onClick={() => {
-                    clickHandler('#ff0000');
+                    clickHandler('#001bff');
                 }}
-                $color={'#ff0000'}
+                $color={'#001bff'}
             />
             <Color
                 onClick={() => {

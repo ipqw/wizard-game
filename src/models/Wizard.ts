@@ -17,7 +17,7 @@ export class Wizard {
     context: CanvasRenderingContext2D | null;
     hits: number = 0;
     castFrequency: number = 0.5;
-    color: string = '#ff0000';
+    spellColor: string = '#001bff';
 
     constructor(position: 'left' | 'right', game: Game, context: CanvasRenderingContext2D | null) {
         this.location =
@@ -29,7 +29,7 @@ export class Wizard {
     }
 
     setColor = (color: string) => {
-        this.color = color;
+        this.spellColor = color;
     };
 
     update = () => {
@@ -70,12 +70,12 @@ export class Wizard {
     draw = (context: CanvasRenderingContext2D) => {
         context.beginPath();
         context.roundRect(this.location.x, this.location.y, 30, 30, 100);
-        context.fillStyle = this.color;
+        context.fillStyle = 'red';
         context.fill();
         context.closePath();
         this.spells.forEach((spell) => {
             if (this.context) {
-                spell.draw(this.context);
+                spell.draw(this.context, this.spellColor);
             }
         });
     };
