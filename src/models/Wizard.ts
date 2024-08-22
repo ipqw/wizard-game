@@ -1,3 +1,4 @@
+import { store } from '../store';
 import { Game } from './Game';
 import { Spell } from './Spell';
 
@@ -31,9 +32,23 @@ export class Wizard {
             if (this.location.y <= 0) {
                 this.direction = 'down';
             }
+            if (
+                store.cursorLocation.y === this.location.y &&
+                store.cursorLocation.x >= this.location.x &&
+                store.cursorLocation.x <= this.location.x + 30
+            ) {
+                this.direction = 'down';
+            }
             this.location.y -= this.speed;
         } else {
             if (this.location.y >= this.game.height - 30) {
+                this.direction = 'up';
+            }
+            if (
+                store.cursorLocation.y === this.location.y + 30 &&
+                store.cursorLocation.x >= this.location.x &&
+                store.cursorLocation.x <= this.location.x + 30
+            ) {
                 this.direction = 'up';
             }
             this.location.y += this.speed;

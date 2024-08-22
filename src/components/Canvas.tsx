@@ -4,6 +4,7 @@ import { Game } from '../models/Game';
 import { Spell } from '../models/Spell';
 import { store } from '../store';
 import { observer } from 'mobx-react';
+import { getCursorPosition } from '../assets/functions';
 
 interface IProps {
     width: number;
@@ -68,6 +69,17 @@ const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
             animate();
             wizardCast('left');
             wizardCast('right');
+        }
+        if (canvasRef.current) {
+            const mouseHandler = (event: MouseEvent) => {
+                store.setCursorLocation(getCursorPosition(canvasRef.current, event));
+            };
+
+            canvasRef.current.addEventListener('mousemove', mouseHandler);
+
+            return () => {
+                canvasRef.current?.removeEventListener('mousemove', mouseHandler);
+            };
         }
     });
 

@@ -5,6 +5,14 @@ class Storage {
     constructor() {
         makeAutoObservable(this);
     }
+    _cursorLocation: { x: number; y: number } = { x: 0, y: 0 };
+    get cursorLocation() {
+        return this._cursorLocation;
+    }
+    setCursorLocation = (location: { x: number; y: number }) => {
+        this._cursorLocation = location;
+    };
+
     // hits
     _leftWizardHits: number = 0;
     get leftWizardHits() {
