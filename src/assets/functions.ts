@@ -1,9 +1,9 @@
-import { IPosition } from '../models/Wizard';
+import { ILocation } from '../models/Wizard';
 
 export const getCursorPosition = (
     canvas: HTMLCanvasElement | null,
     event: MouseEvent,
-): IPosition => {
+): ILocation => {
     const rect = canvas?.getBoundingClientRect();
     const x = event.clientX - Number(rect?.left);
     const y = event.clientY - Number(rect?.top);

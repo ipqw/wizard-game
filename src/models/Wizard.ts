@@ -2,14 +2,14 @@ import { store } from '../store';
 import { Game } from './Game';
 import { Spell } from './Spell';
 
-export interface IPosition {
+export interface ILocation {
     x: number;
     y: number;
 }
 
 export class Wizard {
     speed: number = 1;
-    location: IPosition;
+    location: ILocation;
     position: 'left' | 'right';
     direction: 'up' | 'down';
     game: Game;
@@ -17,6 +17,7 @@ export class Wizard {
     context: CanvasRenderingContext2D | null;
     hits: number = 0;
     castFrequency: number = 0.5;
+    color: string = '#ff0000';
 
     constructor(position: 'left' | 'right', game: Game, context: CanvasRenderingContext2D | null) {
         this.location =
@@ -26,6 +27,10 @@ export class Wizard {
         this.game = game;
         this.context = context;
     }
+
+    setColor = (color: string) => {
+        this.color = color;
+    };
 
     update = () => {
         if (this.direction === 'up') {
@@ -65,7 +70,7 @@ export class Wizard {
     draw = (context: CanvasRenderingContext2D) => {
         context.beginPath();
         context.roundRect(this.location.x, this.location.y, 30, 30, 100);
-        context.fillStyle = 'red';
+        context.fillStyle = this.color;
         context.fill();
         context.closePath();
         this.spells.forEach((spell) => {

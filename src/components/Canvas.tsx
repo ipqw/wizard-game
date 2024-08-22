@@ -1,20 +1,27 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Game } from '../models/Game';
 import { Spell } from '../models/Spell';
 import { store } from '../store';
 import { observer } from 'mobx-react';
 import { getCursorPosition } from '../assets/functions';
+import PopupMenu from './PopupMenu';
+import { ILocation } from '../models/Wizard';
 
 interface IProps {
     width: number;
     height: number;
 }
-// ПРОДУМАТЬ ЛОГИКУ ЧАСТОТы КАСТОВ
 const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const gameRef = useRef<Game | null>(null);
+
+    const [isLeftPopupVisible, setIsLeftPopupVisible] = useState<boolean>(false);
+    const [leftPopupLocation, setLeftPopupLocation] = useState<ILocation>({ x: 0, y: 0 });
+
+    const [isRightPopupVisible, setIsRightPopupVisible] = useState<boolean>(false);
+    const [rightPopupLocation, setRightPopupLocation] = useState<ILocation>({ x: 0, y: 0 });
 
     useEffect(() => {
         contextRef.current = canvasRef.current?.getContext('2d') || null;
@@ -71,14 +78,46 @@ const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
             wizardCast('right');
         }
         if (canvasRef.current) {
-            const mouseHandler = (event: MouseEvent) => {
+            const mouseOverHandler = (event: MouseEvent) => {
                 store.setCursorLocation(getCursorPosition(canvasRef.current, event));
             };
+            const mouseDownHandler = (event: MouseEvent) => {
+                let isOnWizard: boolean = false;
+                gameRef.current?.wizards.forEach((wizard) => {
+                    if (
+                        getCursorPosition(canvasRef.current, event).x >= wizard.location.x &&
+                        getCursorPosition(canvasRef.current, event).x <= wizard.location.x + 30 &&
+                        getCursorPosition(canvasRef.current, event).y >= wizard.location.y &&
+                        getCursorPosition(canvasRef.current, event).y <= wizard.location.y + 30
+                    ) {
+                        if (wizard.position === 'left') {
+                            setLeftPopupLocation({
+                                x: wizard.location.x + 35,
+                                y: wizard.location.y,
+                            });
+                            setIsLeftPopupVisible(true);
+                            isOnWizard = true;
+                        } else {
+                            setRightPopupLocation({
+                                x: wizard.location.x - 145,
+                                y: wizard.location.y,
+                            });
+                            setIsRightPopupVisible(true);
+                            isOnWizard = true;
+                        }
+                    }
+                    if (!isOnWizard) {
+                        setIsRightPopupVisible(false);
+                        setIsLeftPopupVisible(false);
+                    }
+                });
+            };
 
-            canvasRef.current.addEventListener('mousemove', mouseHandler);
-
+            canvasRef.current.addEventListener('mousemove', mouseOverHandler);
+            canvasRef.current.addEventListener('mousedown', mouseDownHandler);
             return () => {
-                canvasRef.current?.removeEventListener('mousemove', mouseHandler);
+                canvasRef.current?.removeEventListener('mousemove', mouseOverHandler);
+                canvasRef.current?.removeEventListener('mousedown', mouseDownHandler);
             };
         }
     });
@@ -86,15 +125,26 @@ const CanvasComponent: FC<IProps> = observer(({ width, height }) => {
     return (
         <Wrapper>
             <Canvas ref={canvasRef} width={width} height={height} />
+            <PopupMenu
+                setIsPopupVisible={setIsLeftPopupVisible}
+                wizard={store.leftWizard}
+                location={leftPopupLocation}
+                isVisible={isLeftPopupVisible}
+            />
+            <PopupMenu
+                setIsPopupVisible={setIsRightPopupVisible}
+                wizard={store.rightWizard}
+                location={rightPopupLocation}
+                isVisible={isRightPopupVisible}
+            />
         </Wrapper>
     );
 });
 const Wrapper = styled.div`
     display: flex;
-    flex-direction: column;
-    row-gap: 30px;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    width: fit-content;
+    height: fit-content;
 `;
 const Canvas = styled.canvas`
     border: 1px black solid;

@@ -1,13 +1,13 @@
-import { IPosition, Wizard } from './Wizard';
+import { ILocation, Wizard } from './Wizard';
 
 export class Spell {
-    public location: IPosition;
+    public location: ILocation;
     public direction: 'left' | 'right';
     public speed: number = 3;
     public wizard: Wizard;
     isVisible: boolean = true;
 
-    constructor(location: IPosition, direction: 'left' | 'right', wizard: Wizard) {
+    constructor(location: ILocation, direction: 'left' | 'right', wizard: Wizard) {
         this.location = location;
         this.direction = direction;
         this.wizard = wizard;
